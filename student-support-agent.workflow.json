@@ -1,0 +1,2279 @@
+{
+  "name": "Student Support Agent - Final",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "f56dda47-c2b1-4764-902f-46152de381da",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -5440,
+        -1136
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e24ee027-b9e8-4f46-bafe-28f11be564a9",
+              "leftValue": "={{ $json }}",
+              "rightValue": "grade",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0882ff83-b6b2-413f-918b-046a75e7981c",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5056,
+        -1264
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "student profile",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Student Id",
+              "lookupValue": "={{ $json.message.chat.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cb7821ac-d059-42a7-9e68-a8e2311efb7d",
+      "name": "Get row(s) in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -5232,
+        -1216
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "student profile",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Student Id": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "First name ": "={{ $('Telegram Trigger').item.json.message.chat.first_name }}",
+            "Total massages": "1",
+            "First contact ": "={{$now.toISO()}}",
+            "Last seen": "={{$now.toISO()}}\n"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Student Id",
+              "displayName": "Student Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "First name ",
+              "displayName": "First name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "First contact ",
+              "displayName": "First contact ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total massages",
+              "displayName": "Total massages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last seen",
+              "displayName": "Last seen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6a1eabb3-c3b6-46c0-b267-be0b94fe956a",
+      "name": "create new profile",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -4784,
+        -1360
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "student profile",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Student Id": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "Total massages": "={{ $json['Total massages'] + 1}}",
+            "Last seen": "={{$now.toISO()}}"
+          },
+          "matchingColumns": [
+            "Student Id"
+          ],
+          "schema": [
+            {
+              "id": "Student Id",
+              "displayName": "Student Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "First name ",
+              "displayName": "First name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "First contact ",
+              "displayName": "First contact ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Total massages",
+              "displayName": "Total massages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last seen",
+              "displayName": "Last seen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b04df9d1-ef59-4d15-b67e-5d3a907bf5ef",
+      "name": "Update in profile",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -4816,
+        -1104
+      ],
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {},
+      "id": "98f4df9c-00fb-4ec3-ace6-8b489887e2c2",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -4576,
+        -1216
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Build History').item.json.Category }}",
+                    "rightValue": "grade",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "199cbcd3-a651-4dc1-8c0e-9a51037c2737"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "grade"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2e1e8e27-7836-4a56-b0d5-a963a31df969",
+                    "leftValue": "={{ $('Build History').item.json.Category }}",
+                    "rightValue": "registration",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Registration"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d6ba4b84-52a2-4be8-b169-1f33dd800d6c",
+                    "leftValue": "={{ $('Build History').item.json.Category }}",
+                    "rightValue": "payment",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "payment"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1d1ad074-6e97-4b39-a2b4-793715ed8ca1",
+                    "leftValue": "={{ $('Build History').item.json.Category }}",
+                    "rightValue": "schedule",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Schedule"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "49212621-fee8-409b-8dc1-7fe26a2c9953",
+                    "leftValue": "={{ $('Build History').item.json.Category }}",
+                    "rightValue": "it support",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IT Support"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8188ee9f-7fa6-4856-a013-6d6fb08ea49c",
+                    "leftValue": "={{ $('Build History').item.json.Category }}",
+                    "rightValue": "other",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "other"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "ab9ede54-5a47-49af-98d1-2478486bfbd1",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -3472,
+        -1296
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ String($json.text || '').replace(/\\s*[^.!?؟\\n]*(student id|student number|password|student mood|your mood|the mood|رقم الطالب|كلمة المرور)[^.!?؟\\n]*[.!?؟]?/gi, '').replace(/\\s*[^.!?؟\\n]*(\\b(january|february|march|april|may|june|july|august|september|october|november|december)\\b\\.?\\s*\\d{1,2}|\\b\\d{1,2}(st|nd|rd|th)?\\s+(of\\s+)?(january|february|march|april|may|june|july|august|september|october|november|december)\\b)[^.!?؟\\n]*[.!?؟]?/gi, '').replace(/\\n+\\s*(best regards|kind regards|warm regards|regards|best|sincerely|cheers|مع تحياتي|مع أطيب التحيات|أطيب التحيات|تحياتي)\\s*[,.!،]?\\s*(\\n[^\\n]{0,40})?\\s*$/i, '').trim() }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "41213d4f-c3e2-424f-a2d2-891c91ab18b7",
+      "name": "Send a text message2",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1792,
+        -1744
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ String($json.text || '').replace(/\\s*[^.!?؟\\n]*(student id|student number|password|student mood|your mood|the mood|رقم الطالب|كلمة المرور)[^.!?؟\\n]*[.!?؟]?/gi, '').replace(/\\s*[^.!?؟\\n]*(\\b(january|february|march|april|may|june|july|august|september|october|november|december)\\b\\.?\\s*\\d{1,2}|\\b\\d{1,2}(st|nd|rd|th)?\\s+(of\\s+)?(january|february|march|april|may|june|july|august|september|october|november|december)\\b)[^.!?؟\\n]*[.!?؟]?/gi, '').replace(/\\n+\\s*(best regards|kind regards|warm regards|regards|best|sincerely|cheers|مع تحياتي|مع أطيب التحيات|أطيب التحيات|تحياتي)\\s*[,.!،]?\\s*(\\n[^\\n]{0,40})?\\s*$/i, '').trim() }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "bc142861-cf02-445b-b8e0-443e09e7e796",
+      "name": "Send a text message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1792,
+        -1472
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ String($json.text || '').replace(/\\s*[^.!?؟\\n]*(student id|student number|password|student mood|your mood|the mood|رقم الطالب|كلمة المرور)[^.!?؟\\n]*[.!?؟]?/gi, '').replace(/\\s*[^.!?؟\\n]*(\\b(january|february|march|april|may|june|july|august|september|october|november|december)\\b\\.?\\s*\\d{1,2}|\\b\\d{1,2}(st|nd|rd|th)?\\s+(of\\s+)?(january|february|march|april|may|june|july|august|september|october|november|december)\\b)[^.!?؟\\n]*[.!?؟]?/gi, '').replace(/\\n+\\s*(best regards|kind regards|warm regards|regards|best|sincerely|cheers|مع تحياتي|مع أطيب التحيات|أطيب التحيات|تحياتي)\\s*[,.!،]?\\s*(\\n[^\\n]{0,40})?\\s*$/i, '').trim() }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "41258fd4-6fde-4314-9da8-b65b4e52245e",
+      "name": "Send a text message1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1312,
+        -1216
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}\n",
+        "text": "={{ String($json.text || '').replace(/\\s*[^.!?؟\\n]*(student id|student number|password|student mood|your mood|the mood|رقم الطالب|كلمة المرور)[^.!?؟\\n]*[.!?؟]?/gi, '').replace(/\\s*[^.!?؟\\n]*(\\b(january|february|march|april|may|june|july|august|september|october|november|december)\\b\\.?\\s*\\d{1,2}|\\b\\d{1,2}(st|nd|rd|th)?\\s+(of\\s+)?(january|february|march|april|may|june|july|august|september|october|november|december)\\b)[^.!?؟\\n]*[.!?؟]?/gi, '').replace(/\\n+\\s*(best regards|kind regards|warm regards|regards|best|sincerely|cheers|مع تحياتي|مع أطيب التحيات|أطيب التحيات|تحياتي)\\s*[,.!،]?\\s*(\\n[^\\n]{0,40})?\\s*$/i, '').trim() }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "bf42a446-8b5d-4cb8-9dd1-36dff333e215",
+      "name": "Send a text message3",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1792,
+        -960
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}\n",
+        "text": "Contact it-support@example.edu or call ext. 1234.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "7fb2fce8-cf1c-4b7e-8167-24dcd40be4c9",
+      "name": "Send a text message4",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2192,
+        -704
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}\n",
+        "text": "={{ String($json.text || '').replace(/\\s*[^.!?؟\\n]*(student id|student number|password|student mood|your mood|the mood|رقم الطالب|كلمة المرور)[^.!?؟\\n]*[.!?؟]?/gi, '').replace(/\\s*[^.!?؟\\n]*(\\b(january|february|march|april|may|june|july|august|september|october|november|december)\\b\\.?\\s*\\d{1,2}|\\b\\d{1,2}(st|nd|rd|th)?\\s+(of\\s+)?(january|february|march|april|may|june|july|august|september|october|november|december)\\b)[^.!?؟\\n]*[.!?؟]?/gi, '').replace(/\\n+\\s*(best regards|kind regards|warm regards|regards|best|sincerely|cheers|مع تحياتي|مع أطيب التحيات|أطيب التحيات|تحياتي)\\s*[,.!،]?\\s*(\\n[^\\n]{0,40})?\\s*$/i, '').trim() }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "3eb2fe45-61a8-49e1-a31b-164aa1b2f306",
+      "name": "Send a text message5",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1488,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a university student support classifier. Read the student message and classify it into exactly one category.  Categories: - grade - registration - payment - schedule - other  The message may be in Arabic or English.  Classification rules:  - grade: Questions about grades, marks, GPA, results, grade deadlines, or when grades are released. Arabic words such as \"معدلي\", \"علامتي\", \"علامات\", and \"درجاتي\" mean grade. - registration: Questions about course registration, enrollment, adding or dropping courses, or semester registration. - payment: Questions about tuition, fees, payments, invoices, or financial charges. - schedule: Questions about class schedules, lectures, timetables, or class times. - other: Use this when the message is vague, unrelated to the categories above, or does not provide enough information to identify a category.  Examples: \"أريد معرفة معدلي\" → grade \"I need help with something\" → other \"My Friend told me the Grade deadline Change\" → grade  Reply with ONE WORD ONLY. No explanation. No punctuation."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "569a11ed-1c94-43ac-882c-efba4f8e3b1c",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -4352,
+        -1216
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "allam-2-7b",
+        "options": {}
+      },
+      "id": "eebc220e-083c-48fb-a76a-bc3a10d11454",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -4512,
+        -896
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Output of the mood classifier: line 1 = mood, line 2 = confidence (1-10)\nconst raw = String($json.text || '').toLowerCase();\n\nconst labelMatch = raw.match(/urgent|frustrated|angry|confused|happy|sad|neutral/);\nlet label = labelMatch ? labelMatch[0] : 'neutral';\nif (label === 'angry') label = 'frustrated'; // moods: urgent, frustrated, confused, happy, neutral\nif (label === 'sad') label = 'neutral';\n\nconst confMatch = raw.match(/\\d+/);\nconst confidence = confMatch ? Number(confMatch[0]) : 0;\n\n// Only trust the mood label (including urgent) if confidence >= 7, otherwise neutral\nlet mood = confidence >= 7 ? label : 'neutral';\n\n// Keyword guard for urgency: the small model sometimes calls \"URGENT: ...\" just frustrated, so a message that\n// literally says it is urgent is always treated as urgent, whatever the model answered.\nconst msgText = String($('Telegram Trigger').first().json.message.text || '');\nconst urgentByKeyword = /\\b(urgent(ly)?|asap|emergency|immediately)\\b|عاجل|عاجلة|فورا|فوراً|ضروري جدا|ضروري جداً/i.test(msgText);\nif (urgentByKeyword) mood = 'urgent';\n\nconst category = String($('Basic LLM Chain').item.json.text || '').trim().toLowerCase().replace(/[^a-z ]/g, '');\n\nreturn { json: { Category: category, mood, confidence, raw_mood: label, urgent_by_keyword: urgentByKeyword } };"
+      },
+      "id": "4ed07d4e-6bd0-491c-9743-90b5e3121b4b",
+      "name": "Extract Mood",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3968,
+        -1232
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a university student mood classifier.\n\nRead the student's message and classify the student's mood.\n\nMoods:\n- urgent (the student needs help right now: the message says urgent, ASAP, immediately, emergency, \"today\", \"tonight\", \"before the deadline\", or says they are blocked from enrolling, paying, sitting an exam or keeping a scholarship, or it is written in ALL CAPS with time pressure)\n- frustrated (also angry, annoyed, upset, impatient, complaining)\n- confused (does not understand, unsure what to do, needs clarification)\n- happy (thankful, positive, excited)\n- neutral (calm, factual, or no clear emotion)\n\nThe message may be in Arabic or English. Arabic words such as \"عاجل\", \"ضروري\", \"فورا\", \"حالا\" and \"اليوم\" show urgency.\n\nPriority rules:\n1. The words urgent, urgently, ASAP, emergency, immediately or عاجل always mean urgent, even if the student is also upset.\n2. If the student is upset AND there is clear time pressure or a real blocking problem, choose urgent.\n3. A normal complaint with none of the above is frustrated.\n4. A normal question with no time pressure is neutral, even if it is about a deadline.\n\nReply with exactly TWO lines and nothing else:\nLine 1: the mood, ONE word from the list above (urgent, frustrated, confused, happy, or neutral).\nLine 2: your confidence in that mood as a single number from 1 to 10 (10 = completely sure, 1 = just guessing).\n\nExample reply:\nurgent\n9\n\nDo not add brackets, extra words, or explanations. Use a low confidence when the message is short, ambiguous, or shows no clear emotion."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "a167aca7-b7d4-4101-9e95-8d36fdf18e6b",
+      "name": "mood classifier",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -4032,
+        -1520
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "allam-2-7b",
+        "options": {}
+      },
+      "id": "b52621e2-2e6a-4ba8-8c30-b8d18a2edb48",
+      "name": "Groq Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -4208,
+        -896
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "conversation log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "TimeStamp": "={{ $now.toISO() }}",
+            "Student Id": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "Name": "={{ $('Telegram Trigger').item.json.message.chat.first_name }}",
+            "Massage": "={{ String($('Telegram Trigger').item.json.message.text || '').slice(0, 500) }}",
+            "Category": "={{ $json.Category }}",
+            "Mood": "={{ $json.mood }}"
+          },
+          "matchingColumns": [
+            "Student Id"
+          ],
+          "schema": [
+            {
+              "id": "TimeStamp",
+              "displayName": "TimeStamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Student Id",
+              "displayName": "Student Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Massage",
+              "displayName": "Massage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mood",
+              "displayName": "Mood",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "id": "327eea6d-ebc9-4831-bfae-6ccc5f3e1762",
+      "name": "Append row in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2944,
+        -1216
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Earlier messages from this student, for background only (oldest first):\n{{ $('Build History').item.json.history }}\n\n{{ $('Format Live Rates').item.json.rates_block }}\n\nCURRENT student message (answer this one): {{ $('Telegram Trigger').item.json.message.text }}\nStudent mood: {{ $('Extract Mood').item.json.mood }}\nReply language: {{ $('Build History').item.json.reply_language }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a university customer support assistant handling payment and finance questions.\n\nReply like a helpful Telegram customer service agent: keep every reply short and natural, maximum 2-3 short lines. Write it as a chat message of 2-3 short sentences (about 40 words). Start with Hi and the student's first name, and stop right after your last sentence: the message ends there and nothing follows it. Always reply in the same language as the student's message: if the message is in English, reply in English only (never Arabic); if it is in Arabic, reply in Arabic.\n\nPayment/Finance contact:\n- Email: finance@example.edu\n- Office: Room B102\n\nStudent context:\n- Student name: {{ $('Telegram Trigger').item.json.message.chat.first_name }}\n- Message count: {{ $('Update in profile').item.json['Total massages'] }}\n- Category: {{ $('Extract Mood').item.json.Category }}\n\nAdapt your tone to the student's mood (given as \"Student mood\" in the user message):\n- frustrated: acknowledge their frustration first with empathy and a brief apology, stay calm and reassuring, then give the help.\n- confused: explain in very simple words, step by step, avoid jargon, and invite them to ask if anything is still unclear.\n- happy: keep the reply brief, warm, and upbeat.\n- neutral: keep the reply professional, clear, and informative.\n\nIf the student has a payment problem or has not received a response, briefly acknowledge the issue and provide the finance contact information.\n\nDo not invent policies, deadlines, fees, or procedures.\n\nConversation history: the user message starts with the student's last one or two earlier messages as background, followed by the CURRENT message. Use them only when the current message clearly continues an earlier topic (for example it says \"it\", \"that\", \"again\", \"still\", or \"what about the deadline?\"): then answer in that context and do not ask the student to repeat themselves. Otherwise ignore the history completely. Never list, summarize or quote the earlier messages unless the student asks about them, and never bring up a topic from them (for example payments, deadlines or currency) that the current message is not about. If the student repeats the same question, you may say briefly that it was already covered. The reply language is given as \"Reply language\" and always follows the CURRENT message, never the language of the history.\n\nNever write a signature, sign-off or placeholder such as \"Best regards\" or \"Your Name\", and never repeat a sentence.\n\nYou cannot look up grades, accounts, payments or student records, and you must never ask the student for a student ID, password or personal details. Point the student to the student portal or the relevant university office instead.\n\nYou do not know any date, deadline, release time, amount, fee, room number or phone number except those written in this prompt. If the student asks for one, say you do not have that information and send them to the student portal or the relevant office. Never say when something will happen."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "0ca47637-8873-431c-ad92-d3703473127f",
+      "name": "payment ai",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -1600,
+        -1232
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "allam-2-7b",
+        "options": {
+          "maxTokensToSample": 450,
+          "temperature": 0.3
+        }
+      },
+      "id": "64321951-ab9b-464f-a013-acf2a1770c0b",
+      "name": "Groq Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1696,
+        -1072
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Earlier messages from this student, for background only (oldest first):\n{{ $('Build History').item.json.history }}\n\nCURRENT student message (answer this one): {{ $('Telegram Trigger').item.json.message.text }}\nStudent mood: {{ $('Extract Mood').item.json.mood }}\nReply language: {{ $('Build History').item.json.reply_language }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a university student support assistant handling grade questions (grades, marks, GPA, results, and when grades are released).\n\nReply like a helpful Telegram customer service agent: keep every reply short and natural, maximum 2-3 short lines. Write it as a chat message of 2-3 short sentences (about 40 words). Start with Hi and the student's first name, and stop right after your last sentence: the message ends there and nothing follows it. Always reply in the same language as the student's message: if the message is in English, reply in English only (never Arabic); if it is in Arabic, reply in Arabic.\n\nStudent name: {{ $('Telegram Trigger').item.json.message.chat.first_name }}\n\nAdapt your tone to the student's mood (given as \"Student mood\" in the user message):\n- frustrated: acknowledge their frustration first with empathy and a brief apology, stay calm and reassuring, then give the help.\n- confused: explain in very simple words, step by step, avoid jargon, and invite them to ask if anything is still unclear.\n- happy: keep the reply brief, warm, and upbeat.\n- neutral: keep the reply professional, clear, and informative.\n\nDo not invent policies, dates, fees, grades, or contact details. If you do not have the exact information, tell the student to check the student portal or ask the relevant university office.\n\nConversation history: the user message starts with the student's last one or two earlier messages as background, followed by the CURRENT message. Use them only when the current message clearly continues an earlier topic (for example it says \"it\", \"that\", \"again\", \"still\", or \"what about the deadline?\"): then answer in that context and do not ask the student to repeat themselves. Otherwise ignore the history completely. Never list, summarize or quote the earlier messages unless the student asks about them, and never bring up a topic from them (for example payments, deadlines or currency) that the current message is not about. If the student repeats the same question, you may say briefly that it was already covered. The reply language is given as \"Reply language\" and always follows the CURRENT message, never the language of the history.\n\nNever write a signature, sign-off or placeholder such as \"Best regards\" or \"Your Name\", and never repeat a sentence.\n\nYou cannot look up grades, accounts, payments or student records, and you must never ask the student for a student ID, password or personal details. Point the student to the student portal or the relevant university office instead.\n\nYou do not know any date, deadline, release time, amount, fee, room number or phone number except those written in this prompt. If the student asks for one, say you do not have that information and send them to the student portal or the relevant office. Never say when something will happen."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "2ffc8370-929f-4518-aa6b-bc72c414cc33",
+      "name": "grade ai",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -2208,
+        -1808
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "allam-2-7b",
+        "options": {
+          "maxTokensToSample": 450,
+          "temperature": 0.3
+        }
+      },
+      "id": "23b19fbd-1fd0-459b-9ba1-de71282c3631",
+      "name": "Groq Grade",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        -1584
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Earlier messages from this student, for background only (oldest first):\n{{ $('Build History').item.json.history }}\n\nCURRENT student message (answer this one): {{ $('Telegram Trigger').item.json.message.text }}\nStudent mood: {{ $('Extract Mood').item.json.mood }}\nReply language: {{ $('Build History').item.json.reply_language }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a university student support assistant handling course registration questions (registration, enrollment, adding or dropping courses, semester registration).\n\nReply like a helpful Telegram customer service agent: keep every reply short and natural, maximum 2-3 short lines. Write it as a chat message of 2-3 short sentences (about 40 words). Start with Hi and the student's first name, and stop right after your last sentence: the message ends there and nothing follows it. Always reply in the same language as the student's message: if the message is in English, reply in English only (never Arabic); if it is in Arabic, reply in Arabic.\n\nStudent name: {{ $('Telegram Trigger').item.json.message.chat.first_name }}\n\nAdapt your tone to the student's mood (given as \"Student mood\" in the user message):\n- frustrated: acknowledge their frustration first with empathy and a brief apology, stay calm and reassuring, then give the help.\n- confused: explain in very simple words, step by step, avoid jargon, and invite them to ask if anything is still unclear.\n- happy: keep the reply brief, warm, and upbeat.\n- neutral: keep the reply professional, clear, and informative.\n\nDo not invent policies, dates, fees, grades, or contact details. If you do not have the exact information, tell the student to check the student portal or ask the relevant university office.\n\nConversation history: the user message starts with the student's last one or two earlier messages as background, followed by the CURRENT message. Use them only when the current message clearly continues an earlier topic (for example it says \"it\", \"that\", \"again\", \"still\", or \"what about the deadline?\"): then answer in that context and do not ask the student to repeat themselves. Otherwise ignore the history completely. Never list, summarize or quote the earlier messages unless the student asks about them, and never bring up a topic from them (for example payments, deadlines or currency) that the current message is not about. If the student repeats the same question, you may say briefly that it was already covered. The reply language is given as \"Reply language\" and always follows the CURRENT message, never the language of the history.\n\nNever write a signature, sign-off or placeholder such as \"Best regards\" or \"Your Name\", and never repeat a sentence.\n\nYou cannot look up grades, accounts, payments or student records, and you must never ask the student for a student ID, password or personal details. Point the student to the student portal or the relevant university office instead.\n\nYou do not know any date, deadline, release time, amount, fee, room number or phone number except those written in this prompt. If the student asks for one, say you do not have that information and send them to the student portal or the relevant office. Never say when something will happen."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "a67bb69c-3c6a-4e38-a149-83c8b06391aa",
+      "name": "registration ai",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -2096,
+        -1504
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "allam-2-7b",
+        "options": {
+          "maxTokensToSample": 450,
+          "temperature": 0.3
+        }
+      },
+      "id": "82d52407-d7e3-4c0d-bf79-8460ca47e710",
+      "name": "Groq Registration",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        -1328
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Earlier messages from this student, for background only (oldest first):\n{{ $('Build History').item.json.history }}\n\nCURRENT student message (answer this one): {{ $('Telegram Trigger').item.json.message.text }}\nStudent mood: {{ $('Extract Mood').item.json.mood }}\nReply language: {{ $('Build History').item.json.reply_language }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a university student support assistant handling class schedule questions (lectures, timetables, class times).\n\nReply like a helpful Telegram customer service agent: keep every reply short and natural, maximum 2-3 short lines. Write it as a chat message of 2-3 short sentences (about 40 words). Start with Hi and the student's first name, and stop right after your last sentence: the message ends there and nothing follows it. Always reply in the same language as the student's message: if the message is in English, reply in English only (never Arabic); if it is in Arabic, reply in Arabic.\n\nStudent name: {{ $('Telegram Trigger').item.json.message.chat.first_name }}\n\nAdapt your tone to the student's mood (given as \"Student mood\" in the user message):\n- frustrated: acknowledge their frustration first with empathy and a brief apology, stay calm and reassuring, then give the help.\n- confused: explain in very simple words, step by step, avoid jargon, and invite them to ask if anything is still unclear.\n- happy: keep the reply brief, warm, and upbeat.\n- neutral: keep the reply professional, clear, and informative.\n\nDo not invent policies, dates, fees, grades, or contact details. If you do not have the exact information, tell the student to check the student portal or ask the relevant university office.\n\nConversation history: the user message starts with the student's last one or two earlier messages as background, followed by the CURRENT message. Use them only when the current message clearly continues an earlier topic (for example it says \"it\", \"that\", \"again\", \"still\", or \"what about the deadline?\"): then answer in that context and do not ask the student to repeat themselves. Otherwise ignore the history completely. Never list, summarize or quote the earlier messages unless the student asks about them, and never bring up a topic from them (for example payments, deadlines or currency) that the current message is not about. If the student repeats the same question, you may say briefly that it was already covered. The reply language is given as \"Reply language\" and always follows the CURRENT message, never the language of the history.\n\nNever write a signature, sign-off or placeholder such as \"Best regards\" or \"Your Name\", and never repeat a sentence.\n\nYou cannot look up grades, accounts, payments or student records, and you must never ask the student for a student ID, password or personal details. Point the student to the student portal or the relevant university office instead.\n\nYou do not know any date, deadline, release time, amount, fee, room number or phone number except those written in this prompt. If the student asks for one, say you do not have that information and send them to the student portal or the relevant office. Never say when something will happen."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "c3d8be4c-de81-4ae9-88c1-c1a5aa788bcc",
+      "name": "schedule ai",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -2128,
+        -960
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "allam-2-7b",
+        "options": {
+          "maxTokensToSample": 450,
+          "temperature": 0.3
+        }
+      },
+      "id": "266a35d0-7cfb-4e78-8d76-9d8b250848ed",
+      "name": "Groq Schedule",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        -800
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Earlier messages from this student, for background only (oldest first):\n{{ $('Build History').item.json.history }}\n\nCURRENT student message (answer this one): {{ $('Telegram Trigger').item.json.message.text }}\nStudent mood: {{ $('Extract Mood').item.json.mood }}\nReply language: {{ $('Build History').item.json.reply_language }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a university student support assistant. The student's message is vague or does not fit grades, registration, payments, or schedules. Reply helpfully, and if the request is unclear, ask ONE short clarifying question.\n\nReply like a helpful Telegram customer service agent: keep every reply short and natural, maximum 2-3 short lines. Write it as a chat message of 2-3 short sentences (about 40 words). Start with Hi and the student's first name, and stop right after your last sentence: the message ends there and nothing follows it. Always reply in the same language as the student's message: if the message is in English, reply in English only (never Arabic); if it is in Arabic, reply in Arabic.\n\nStudent name: {{ $('Telegram Trigger').item.json.message.chat.first_name }}\n\nAdapt your tone to the student's mood (given as \"Student mood\" in the user message):\n- frustrated: acknowledge their frustration first with empathy and a brief apology, stay calm and reassuring, then give the help.\n- confused: explain in very simple words, step by step, avoid jargon, and invite them to ask if anything is still unclear.\n- happy: keep the reply brief, warm, and upbeat.\n- neutral: keep the reply professional, clear, and informative.\n\nDo not invent policies, dates, fees, grades, or contact details. If you do not have the exact information, tell the student to check the student portal or ask the relevant university office.\n\nConversation history: the user message starts with the student's last one or two earlier messages as background, followed by the CURRENT message. Use them only when the current message clearly continues an earlier topic (for example it says \"it\", \"that\", \"again\", \"still\", or \"what about the deadline?\"): then answer in that context and do not ask the student to repeat themselves. Otherwise ignore the history completely. Never list, summarize or quote the earlier messages unless the student asks about them, and never bring up a topic from them (for example payments, deadlines or currency) that the current message is not about. If the student repeats the same question, you may say briefly that it was already covered. The reply language is given as \"Reply language\" and always follows the CURRENT message, never the language of the history.\n\nNever write a signature, sign-off or placeholder such as \"Best regards\" or \"Your Name\", and never repeat a sentence.\n\nYou cannot look up grades, accounts, payments or student records, and you must never ask the student for a student ID, password or personal details. Point the student to the student portal or the relevant university office instead.\n\nYou do not know any date, deadline, release time, amount, fee, room number or phone number except those written in this prompt. If the student asks for one, say you do not have that information and send them to the student portal or the relevant office. Never say when something will happen."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "75a4c0b7-b7f2-47fe-9db0-082b972cd2e0",
+      "name": "other ai",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -1888,
+        -304
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": "allam-2-7b",
+        "options": {
+          "maxTokensToSample": 450,
+          "temperature": 0.3
+        }
+      },
+      "id": "13f2209c-9612-4145-a4d9-f43d61757f3b",
+      "name": "Groq Other",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1872,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "320082bc-68d8-48cd-8c75-4ec23634daa2",
+              "leftValue": "={{ $('Extract Mood').item.json.mood }}",
+              "rightValue": "frustrated",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9d9b462c-dbf0-4bed-90b2-ff3913b97a12",
+      "name": "Frustrated?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2192,
+        -432
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Escalations",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Student Id": "={{ $json['Student Id'] }}",
+            "Category": "={{ $json.Category }}",
+            "Count": "={{ $json.Count }}",
+            "Priority": "={{ $json.Priority }}",
+            "Date": "={{ $json.Date }}",
+            "Key": "={{ $json.Key }}"
+          },
+          "matchingColumns": [
+            "Key"
+          ],
+          "schema": [
+            {
+              "id": "Student Id",
+              "displayName": "Student Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Count",
+              "displayName": "Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Key",
+              "displayName": "Key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c85353ce-e5b8-47d5-9258-7b2af5aa7e65",
+      "name": "Log to Escalations (Human Review)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1792,
+        -608
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Hi {{ $('Telegram Trigger').item.json.message.chat.first_name }}, I am connecting you to a staff member who can help.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "5c3cb950-a793-43f1-8169-b638c12b5936",
+      "name": "Human Review Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1600,
+        -544
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "08dd10a0-de22-4ba7-a169-1d3acbcd1659",
+              "leftValue": "={{ String(($json.message && $json.message.text) || '').replace(/[\\s​-‍⁠﻿ ]/g, '').length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3929f89a-d202-4e4c-8322-183557d3d5b1",
+      "name": "Has Text?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5328,
+        -1008
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const m = $json.message || {};\nlet kind = 'blank';\nif (m.photo) kind = 'image';\nelse if (m.voice) kind = 'voice note';\nelse if (m.audio) kind = 'audio file';\nelse if (m.sticker) kind = 'sticker';\nelse if (m.video || m.video_note || m.animation) kind = 'video';\nelse if (m.document) kind = 'file';\nelse if (m.location || m.contact || m.poll) kind = 'attachment';\nconst name = (m.chat && m.chat.first_name) || 'there';\nconst reply = kind === 'blank'\n  ? 'Hi ' + name + ', your message looks empty. Please type your question in words and I will help you.'\n  : 'Hi ' + name + ', I received your ' + kind + ', but I can only read text messages. Please type your question in words and I will help you.';\nreturn { json: { kind, reply } };"
+      },
+      "id": "9b56c408-4399-44e1-9547-9754d8e3f153",
+      "name": "Describe Unsupported Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5152,
+        -816
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.reply }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "2d8af72b-e8a9-4807-921b-84c1c42aea2d",
+      "name": "Reply Unsupported Type",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -4928,
+        -816
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Only these five categories are valid. Anything else becomes 'other'.\nconst VALID = ['grade', 'registration', 'payment', 'schedule', 'other'];\nconst original = $json.Category;\nconst cleaned = String(original === undefined || original === null ? '' : original).trim().toLowerCase();\nconst isValid = VALID.includes(cleaned);\nreturn { json: { ...$json, Category: isValid ? cleaned : 'other', original_category: original === undefined ? null : original, category_was_valid: isValid } };"
+      },
+      "id": "4c560649-fb10-45c1-ad57-aba711d425c9",
+      "name": "Validate Category",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3840,
+        -1232
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Hi {{ $('Telegram Trigger').item.json.message.chat.first_name }}, I am having a technical problem right now and could not answer your message. Please try again in a few minutes, or contact the university office directly.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "13c0a8b0-e5fe-4b62-b947-d71cfe82e708",
+      "name": "AI Error Reply",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -4064,
+        -544
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_STAFF_TELEGRAM_CHAT_ID",
+        "text": "=AI error alert: the bot could not answer {{ $('Telegram Trigger').item.json.message.chat.first_name }} (chat {{ $('Telegram Trigger').item.json.message.chat.id }}). Reason: {{ String(($json.error && $json.error.message) || $json.error || 'unknown').slice(0, 300) }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "737f9ed6-0bb3-4dde-a60a-e21fd25c779d",
+      "name": "Alert Staff (AI error)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        -544
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Escalations",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Student Id",
+              "lookupValue": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+            },
+            {
+              "lookupColumn": "Category",
+              "lookupValue": "other"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2a3bbac9-03d3-40fe-8327-00759c04f219",
+      "name": "Find Existing Escalation",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2048,
+        -608
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => r['Student Id'] !== undefined && String(r['Student Id']).trim() !== '');\nconst existing = rows.length ? rows[0] : null;\nconst count = existing ? (Number(existing.Count) || 1) + 1 : 1;\nconst chat = $('Telegram Trigger').first().json.message.chat;\nreturn [{ json: { 'Student Id': String(chat.id), Key: String(chat.id) + '|other', Category: 'other', Count: String(count), Priority: 'HIGH', Date: $now.toISO(), isDuplicate: !!existing } }];"
+      },
+      "id": "23f342f0-3a1e-49e0-929b-6a440c84c2ad",
+      "name": "Build Escalation Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1920,
+        -608
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Error Log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $now.toISO() }}",
+            "Source": "={{ $prevNode.name }}",
+            "Student Id": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "Message": "={{ String($('Telegram Trigger').item.json.message.text || '').slice(0, 300) }}",
+            "Error": "={{ String(($json.error && $json.error.message) || $json.error || 'unknown').slice(0, 300) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Student Id",
+              "displayName": "Student Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Error",
+              "displayName": "Error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f1",
+      "name": "Log Error (Sheets)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3840,
+        -336
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "conversation log",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Student Id",
+              "lookupValue": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f6e9e8af-defe-4e69-aaaf-b12522b519e6",
+      "name": "Get Conversation History",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -3616,
+        -1232
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn this student's earlier rows of the conversation log into a short history text for the AI (the latest earlier message),\n// and let a short follow-up (\"Is there a deadline for it?\") inherit the topic of the previous message.\nconst v = $('Validate Category').first().json;               // category and mood of the current message\nconst tg = $('Telegram Trigger').first().json.message;\nconst chat = tg.chat;\nconst text = String(tg.text || '');\n\n// A bare greeting or thank-you (\"Hello there\", \"thanks\") does not continue any earlier topic.\n// The small AI model answers the old topic again when it sees history for such a message,\n// so the history is left out for it, and greetings are also not kept as history.\nconst GREET = ['hi', 'hello', 'hey', 'hola', 'thanks', 'thank', 'ok', 'okay', 'good', 'مرحبا', 'اهلا', 'أهلا', 'هلا', 'شكرا', 'شكراً', 'السلام'];\nconst wordsOf = (t) => String(t).toLowerCase().replace(/[^\\p{L}\\p{N}\\s]/gu, ' ').split(/\\s+/).filter(Boolean);\nconst isGreetingText = (t) => { const w = wordsOf(t); return w.length > 0 && w.length <= 4 && GREET.includes(w[0]); };\nconst isGreeting = isGreetingText(text);\n\n// Short follow-ups that point back (\"Is there a deadline for it?\") say nothing about the topic themselves,\n// so they are not kept as history. The message they refer to is.\nconst FOLLOW = /\\b(it|that|this|there|them|those|same|again|still)\\b|^\\s*(and|so|also|then|what about|how about)\\b|هذا|هذه|ذلك|نفسه|نفسها|مرة أخرى|أيضا|ايضا|وماذا عن/i;\nconst TOPIC = /\\b(grades?|marks?|gpa|results?|transcript|regist\\w*|enrol\\w*|drop\\w*|semester|fees?|tuition|pay\\w*|invoice|scholarship|refund|schedule|timetable|lectures?|class(es)? times?)\\b|معدل|علام|درجات|نتيج|تسجيل|سحب|انسحاب|رسوم|دفع|قسط|فاتورة|جدول|محاضر/i;\nconst isFollowUpText = (t) => wordsOf(t).length <= 12 && FOLLOW.test(String(t)) && !TOPIC.test(String(t));\n\nconst rows = $input.all().map(i => i.json)\n  .filter(r => String(r['Student Id'] ?? '').trim() === String(chat.id) && String(r['Massage'] ?? '').trim() !== '');\nconst useful = rows.filter(r => !isGreetingText(r['Massage']) && !isFollowUpText(r['Massage']));\n// Only the latest earlier message is kept: a follow-up (\"it\", \"that\") refers to it, and two similar messages\n// confuse the small model (it asks which of them is meant). Greetings and short follow-ups are skipped, so the\n// message a chain of follow-ups points back to stays available.\nconst recent = useful.slice(-1);\nconst prev = recent.length ? recent[recent.length - 1] : null;\nconst fmt = (r) => {\n  const when = String(r['TimeStamp'] || '').slice(0, 16).replace('T', ' ');\n  return (when ? when + ' | ' : '') + String(r['Massage']).replace(/\\s+/g, ' ').slice(0, 200);\n};\n\n// History is only handed to the AI when the current message needs it: a short message that points back\n// (\"Is there a deadline for it?\") or does not name a topic of its own. A message that already states its topic\n// (\"I want to drop my Chemistry course\", a long grade question) gets no history, because the small model\n// otherwise mixes the old topic into the answer.\nconst nWords = wordsOf(text).length;\nconst needHistory = !isGreeting && (nWords <= 20 ? (FOLLOW.test(text) || !TOPIC.test(text)) : !TOPIC.test(text));\nlet history;\nif (isGreeting) history = 'Not needed: the current message is only a greeting or a thank-you.';\nelse if (!needHistory) history = 'Not needed: the current message already states its own topic.';\nelse if (recent.length === 0) history = 'No earlier messages from this student.';\nelse history = '- Previous message (the one \"it\" or \"that\" usually refers to): ' + fmt(recent[0]);\n// For a short follow-up that points back, tell the model outright what the topic is and ask it to name that topic.\nif (needHistory && recent.length > 0 && nWords <= 20 && FOLLOW.test(text)) history += '\\n- The current message is a short follow-up. The student is asking about: \"' + String(recent[0]['Massage']).replace(/\\s+/g, ' ').slice(0, 120) + '\". Answer about exactly that and name the topic (for example the course or the fee) in your reply. Do not ask which topic is meant.';\n\n// Follow-up routing: a short message that points back (\"it\", \"that\", \"again\") and names no topic of its own\n// goes to the same specialist as the previous message, if that message was sent in the last 30 minutes.\nconst KNOWN = ['grade', 'registration', 'payment', 'schedule'];\nconst prevCat = prev ? String(prev['Category'] || '').trim().toLowerCase() : '';\nconst prevAge = prev ? Date.now() - Date.parse(prev['TimeStamp']) : Infinity;\nlet Category = v.Category;\nlet category_from_history = false;\nif (!isGreeting && wordsOf(text).length <= 12 && FOLLOW.test(text) && !TOPIC.test(text) && KNOWN.includes(prevCat) && prevAge < 30 * 60 * 1000 && Category !== prevCat) {\n  Category = prevCat;\n  category_from_history = true;\n}\n\n// The reply language must follow the CURRENT message, not the history.\n// Arabic only when the message is clearly Arabic; a mixed English + Arabic message gets an English reply.\nconst arabic = (text.match(/[\\u0600-\\u06FF]/g) || []).length;\nconst latin = (text.match(/[A-Za-z]/g) || []).length;\nconst reply_language = arabic > 2 * latin ? 'Arabic' : 'English';\n\nreturn [{ json: { ...v, Category, category_from_history, history, history_count: rows.length, history_used: needHistory && recent.length > 0, reply_language }, pairedItem: { item: 0 } }];"
+      },
+      "id": "3e06c667-0031-4927-8ff0-fa7c9e50b329",
+      "name": "Build History",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3376,
+        -1232
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5f1d2c3a-0000-4000-8000-0000000000a1",
+              "leftValue": "={{ $('Validate Category').item.json.mood }}",
+              "rightValue": "urgent",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ad90df72-7e09-4624-ac1b-ee86c61b83a1",
+      "name": "Urgent Signal?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2720,
+        -1216
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Escalations",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Student Id",
+              "lookupValue": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+            },
+            {
+              "lookupColumn": "Category",
+              "lookupValue": "urgent"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ebbdfebc-a8e9-4a3e-8f04-524f3418addd",
+      "name": "Find Existing Urgent Escalation",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2480,
+        -2096
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => r['Student Id'] !== undefined && String(r['Student Id']).trim() !== '');\nconst existing = rows.length ? rows[0] : null;\nconst count = existing ? (Number(existing.Count) || 1) + 1 : 1;\nconst chat = $('Telegram Trigger').first().json.message.chat;\nreturn [{ json: { 'Student Id': String(chat.id), Key: String(chat.id) + '|urgent', Category: 'urgent', Count: String(count), Priority: 'HIGH', Date: $now.toISO(), isDuplicate: !!existing }, pairedItem: { item: 0 } }];"
+      },
+      "id": "852aec29-afeb-4cf1-a071-ccf2a6627e02",
+      "name": "Build Urgent Escalation Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2240,
+        -2096
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Escalations",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Student Id": "={{ $json['Student Id'] }}",
+            "Category": "={{ $json.Category }}",
+            "Count": "={{ $json.Count }}",
+            "Priority": "={{ $json.Priority }}",
+            "Date": "={{ $json.Date }}",
+            "Key": "={{ $json.Key }}"
+          },
+          "matchingColumns": [
+            "Key"
+          ],
+          "schema": [
+            {
+              "id": "Student Id",
+              "displayName": "Student Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Count",
+              "displayName": "Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Key",
+              "displayName": "Key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0f839563-bcba-4442-82ec-7c45354eddc6",
+      "name": "Log Urgent Escalation",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2000,
+        -2208
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Hi {{ $('Telegram Trigger').item.json.message.chat.first_name }}, I can see this is urgent. I have escalated your message immediately and a staff member will contact you as soon as possible. You do not need to send another message.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "8476d7aa-148b-423c-bb2d-808d2effb752",
+      "name": "Urgent Message to Student",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1488,
+        -2336
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_STAFF_TELEGRAM_CHAT_ID",
+        "text": "=URGENT message from {{ $('Telegram Trigger').item.json.message.chat.first_name }} (chat {{ $('Telegram Trigger').item.json.message.chat.id }}), topic: {{ $('Build History').item.json.Category }}. Message: {{ String($('Telegram Trigger').item.json.message.text || '').slice(0, 300) }}. Urgent escalation count: {{ $json.Count }}.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "5e8452db-bf4f-44ac-aefa-9a481af24934",
+      "name": "Alert Staff (Urgent)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2000,
+        -2000
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://open.er-api.com/v6/latest/JOD",
+        "options": {
+          "timeout": 8000
+        }
+      },
+      "id": "d60e62c6-cf22-47ba-bc4a-f96d25a3ddd8",
+      "name": "Fetch Live Exchange Rates",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2304,
+        -1232
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Live exchange rates from the external API (HTTP Request node).\n// The conversion itself is calculated here in code, because the small AI model is not reliable at arithmetic.\nconst r = $json.rates;\nconst msg = String($('Telegram Trigger').first().json.message.text || '');\nlet live = 'Live exchange rates are not available right now.';\nlet conversion = 'none';\n\nif ($json.result === 'success' && r && r.USD) {\n  const f = (c) => Number(r[c]).toFixed(3);\n  live = '1 JOD = ' + f('USD') + ' USD, ' + f('EUR') + ' EUR, ' + f('SAR') + ' SAR, ' + f('AED') + ' AED (updated ' + $json.time_last_update_utc + ')';\n\n  const WORDS = 'JOD|USD|EUR|SAR|AED|JD|dinars?|dollars?|euros?';\n  const alias = { JD: 'JOD', DINAR: 'JOD', DINARS: 'JOD', DOLLAR: 'USD', DOLLARS: 'USD', EURO: 'EUR', EUROS: 'EUR' };\n  const toCode = (w) => { const u = w.toUpperCase(); return alias[u] || u; };\n  const text = msg.replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));\n  const m1 = text.match(new RegExp('(\\\\d[\\\\d,]*(?:\\\\.\\\\d+)?)\\\\s*(' + WORDS + ')\\\\b', 'i'));\n  const m2 = text.match(new RegExp('\\\\b(' + WORDS + ')\\\\s*(\\\\d[\\\\d,]*(?:\\\\.\\\\d+)?)', 'i'));\n  const found = m1 ? { amount: m1[1], code: m1[2] } : (m2 ? { amount: m2[2], code: m2[1] } : null);\n  if (found) {\n    const amount = Number(found.amount.replace(/,/g, ''));\n    const src = toCode(found.code);\n    const others = [...text.matchAll(new RegExp('\\\\b(' + WORDS + ')\\\\b', 'gi'))].map((x) => toCode(x[1])).filter((c) => c !== src && r[c]);\n    const tgt = others[0] || (src === 'JOD' ? 'USD' : 'JOD');\n    if (r[src] && r[tgt]) {\n      conversion = amount + ' ' + src + ' = ' + (amount / r[src] * r[tgt]).toFixed(2) + ' ' + tgt;\n    }\n  }\n}\n// The rates are fetched for every payment message, but they are only handed to the AI\n// when the student's message is about a currency or an exchange rate; otherwise the small model\n// mentions currency conversion in answers that have nothing to do with it.\nconst aboutCurrency = /\\b(JOD|USD|EUR|SAR|AED|JD|dinars?|dollars?|euros?|currency|currencies|exchange|convert|conversion)\\b|دينار|دولار|يورو|ريال|درهم|عملة|العملات|صرف|تحويل/i.test(msg);\nif (!aboutCurrency) { live = 'Not requested by the student.'; conversion = 'none'; }\n\n// Fallback when the external service cannot be reached: the AI gets the exact reply to send,\n// so a small model can never invent an exchange rate.\nconst ratesOk = $json.result === 'success' && r && r.USD;\nconst firstName = String($('Telegram Trigger').first().json.message.chat.first_name || '');\nconst isArabic = $('Build History').first().json.reply_language === 'Arabic';\nconst fallbackReply = isArabic\n  ? 'مرحباً ' + firstName + '، سعر الصرف المباشر غير متاح حالياً. يرجى المحاولة بعد قليل أو التواصل مع قسم المالية على finance@example.edu.'\n  : 'Hi ' + firstName + ', the live exchange rate is not available right now. Please try again in a few minutes or contact the finance office at finance@example.edu.';\n// Text block handed to the payment AI. It is empty for questions that are not about currency.\nconst rates_block = !aboutCurrency ? '' : !ratesOk ?\n  'IMPORTANT: the live exchange-rate service is down, so you do NOT know any exchange rate. Do not state any rate or converted amount. Reply with exactly this message and nothing else: \"' + fallbackReply + '\"' :\n  'Live exchange rates from an external service: ' + live + '\\n' +\n  'Converted amount (already calculated, copy it exactly): ' + conversion + '\\n' +\n  'Rule for this question: copy the converted amount exactly as written, without mentioning how it was calculated (never do your own arithmetic) and say it is an approximate live rate, not an official university rate. If the pre-calculated conversion is \"none\", quote only the rates above. If the rates are not available, say so and point the student to the finance office. Never invent rates or fees.';\n\nreturn [{ json: { live_rates: live, conversion, rates_block, rates_ok: $json.result === 'success', currency_question: aboutCurrency }, pairedItem: { item: 0 } }];"
+      },
+      "id": "a66e09b0-28cf-44da-81f9-221ce6c5e32c",
+      "name": "Format Live Rates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2064,
+        -1232
+      ]
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Has Text?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "create new profile",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update in profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create new profile": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update in profile": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "grade ai",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "registration ai",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Live Exchange Rates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "schedule ai",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Frustrated?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Frustrated?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "mood classifier",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Error Reply",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert Staff (AI error)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Error (Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mood classifier": {
+      "main": [
+        [
+          {
+            "node": "Extract Mood",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Error Reply",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert Staff (AI error)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Error (Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "mood classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Urgent Signal?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "payment ai": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Error Reply",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert Staff (AI error)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Error (Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "payment ai",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Mood": {
+      "main": [
+        [
+          {
+            "node": "Validate Category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Grade": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "grade ai",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Registration": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "registration ai",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Schedule": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "schedule ai",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Other": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "other ai",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grade ai": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Error Reply",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert Staff (AI error)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Error (Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "registration ai": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Error Reply",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert Staff (AI error)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Error (Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "schedule ai": {
+      "main": [
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Error Reply",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert Staff (AI error)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Error (Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "other ai": {
+      "main": [
+        [
+          {
+            "node": "Send a text message5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Error Reply",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert Staff (AI error)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Error (Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Frustrated?": {
+      "main": [
+        [
+          {
+            "node": "Find Existing Escalation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "other ai",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to Escalations (Human Review)": {
+      "main": [
+        [
+          {
+            "node": "Human Review Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Existing Escalation": {
+      "main": [
+        [
+          {
+            "node": "Build Escalation Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Escalation Row": {
+      "main": [
+        [
+          {
+            "node": "Log to Escalations (Human Review)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Text?": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Describe Unsupported Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Describe Unsupported Message": {
+      "main": [
+        [
+          {
+            "node": "Reply Unsupported Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Category": {
+      "main": [
+        [
+          {
+            "node": "Get Conversation History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Conversation History": {
+      "main": [
+        [
+          {
+            "node": "Build History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build History": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Urgent Signal?": {
+      "main": [
+        [
+          {
+            "node": "Urgent Message to Student",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Find Existing Urgent Escalation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Existing Urgent Escalation": {
+      "main": [
+        [
+          {
+            "node": "Build Urgent Escalation Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Urgent Escalation Row": {
+      "main": [
+        [
+          {
+            "node": "Log Urgent Escalation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert Staff (Urgent)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Live Exchange Rates": {
+      "main": [
+        [
+          {
+            "node": "Format Live Rates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Live Rates": {
+      "main": [
+        [
+          {
+            "node": "payment ai",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Amman"
+  },
+  "active": false,
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
